@@ -2,7 +2,7 @@ import networkx as nx
 import numpy as np
 import itertools as it
 import matplotlib.pyplot as plt
-import pydot
+#import pydot
 from networkx.drawing.nx_pydot import graphviz_layout
 
 class TreeNode:
@@ -103,14 +103,18 @@ def create_tree(Adj_Matrix, root, index, graph_number):
     return 0
 
 #Finish before 7/14
-def traverse_tree(root, Graph, index):
-    Input_RowCol = row_col(Graph,len(Graph))
-    #see written notes for general layout of algorithm
+def traverse_tree(root, Input_RowCol):
 
-    #also create github repo if haven't already
+    for children in root.child:
+        if(children.row_col[root.tier] == Input_RowCol[root.tier]):
+            traverse_tree(children, Input_RowCol)
+    
+    #Two if conditions
+    #1. Has reached a leaf node
+    #2. 
 
     #
-    return 0
+    return 
 
 #Finish before 7/14
 def draw_tree(root):
@@ -150,6 +154,9 @@ Permutated_Subgraphs = adj_mat(AdjMatrix_Model.todense(),Permutation_Matrix_List
 tree_root = TreeNode()
 tree_Graph = nx.DiGraph()
 tree_Graph.add_node("root")
+
+#Input_RowCol = row_col(Graph,len(Graph))
+
 
 #Printing Subgraphs and Row-Column Representation
 for i in range(Model_nodes*2):
