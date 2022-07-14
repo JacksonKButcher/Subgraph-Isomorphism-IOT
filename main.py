@@ -103,18 +103,17 @@ def create_tree(Adj_Matrix, root, index, graph_number):
     return 0
 
 #Finish before 7/14
-def traverse_tree(root, Input_RowCol):
+def traverse_tree(root, Input_RowCol, input_size):
+
+    #If leaf node has been reached return the graphs associated with it
+    if(root.tier == input_size):
+        return root.graphs
 
     for children in root.child:
-        if(children.row_col[root.tier] == Input_RowCol[root.tier]):
-            traverse_tree(children, Input_RowCol)
+        if(children.row_col == Input_RowCol[root.tier]):
+            return traverse_tree(children, Input_RowCol, input_size)
     
-    #Two if conditions
-    #1. Has reached a leaf node
-    #2. 
-
-    #
-    return 
+    return []
 
 #Finish before 7/14
 def draw_tree(root):
@@ -173,6 +172,30 @@ for i in range(Model_nodes*2):
     create_tree(x,tree_root,0,i)
 
 #tree_root.print()
+
+
+
+#Traversal of Decision tree to Analyze an Input Graph Subgraph Isomorphism
+
+
+input_rowcol = [[2], [0, 3, 1]]
+#, [0, 1, 2, 0, 1]
+
+print(f"Input Graph Row Column Representation\n{input_rowcol}")
+
+test = traverse_tree(tree_root,input_rowcol,len(input_rowcol))
+if not(test):
+    print("No Subgraph Match")
+else:
+    print(f"Input Graph Matches Graphs {test}")
+
+
+
+
+
+
+
+
 
 #pos = nx.nx_pydot.graphviz_layout(tree_Graph, prog="dot")
 #nx.draw_networkx(tree_Graph, pos)
