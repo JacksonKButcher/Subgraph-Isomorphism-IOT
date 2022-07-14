@@ -120,7 +120,7 @@ def draw_tree(root, tree_visualization):
     node_number = tree_visualization.number_of_nodes()
     for children in root.child:
         stringconvert = " ".join(map(str,children.row_col))
-        tree_visualization.add_edge(node_number,tree_visualization.number_of_nodes()+1,rowcol = stringconvert)
+        tree_visualization.add_edge(int(node_number),int(tree_visualization.number_of_nodes()+1),rc = stringconvert)
         draw_tree(children,tree_visualization)
 
     return
@@ -144,9 +144,8 @@ Model_nodes = nx.number_of_nodes(G_Model)
 #plt.show()
 
 #Adjacency Matrix of Model Graph Generation
-#print(f"Graph Adjacency: {G_Model.adj}")
 AdjMatrix_Model = nx.adjacency_matrix(G_Model)
-#Cause for SparseEfficiencyWarning
+#Cause for SparseEfficiencyWarning, should fix with a node class later down the line
 AdjMatrix_Model[0,0] = 3
 AdjMatrix_Model[1,1] = 2
 AdjMatrix_Model[2,2] = 2
@@ -198,31 +197,26 @@ else:
 
 
 
-
-
-
-
-
+#Decision tree visualization
+#method call to generate networkx graph of row col, similar to Subgraph Isomorphism Paper
 draw_tree(tree_root,tree_Graph)
-#pos = nx.nx_pydot.graphviz_layout(tree_Graph, prog="dot")
-#nx.draw_networkx_edge_labels(tree_Graph, pos = nx.spring_layout(tree_Graph))
-nx.draw_networkx(tree_Graph)
-
-#G = nx.complete_graph(4)
-
-# = nx.nx_pydot.graphviz_layout(G)
-
-#pos = nx.nx_pydot.graphviz_layout(G, prog="dot")
-#nx.draw(G)
+#generate optimal positions of nodes in format of multilevel tree
+pos = nx.nx_pydot.graphviz_layout(tree_Graph, prog="dot")
+#convert dictionary keys to integers since they're returned as strings of ints(aren't compatible with graph drawing)
+pos = {int(k):v for k,v in pos.items()}
+#draw the graph with slight formatting
+nx.draw_networkx(tree_Graph,pos)
+edge_labels = nx.get_edge_attributes(tree_Graph,'rc')
+nx.draw_networkx_edge_labels(tree_Graph, pos,edge_labels = edge_labels,font_size=8,horizontalalignment='center',rotate=False)
 plt.show()
 
-#T = nx.balanced_tree(2, 5)
-
-#pos = graphviz_layout(T, prog="twopi")
-#nx.draw(T, pos)
-#plt.show()
 
 
+
+
+
+
+#Misc code leftovers
 #stringconvert = " ".join(map(str,Adj_Matrix[index]))
 #stringconvert2 = " ".join(map(str,Adj_Matrix[index-1]))
 #if(index == 0):
