@@ -2,7 +2,7 @@ import networkx as nx
 import numpy as np
 import itertools as it
 import matplotlib.pyplot as plt
-#import pydot
+import pydot
 from networkx.drawing.nx_pydot import graphviz_layout
 
 class TreeNode:
@@ -102,7 +102,7 @@ def create_tree(Adj_Matrix, root, index, graph_number):
     root.graphs.append(graph_number)
     return 0
 
-#Finish before 7/14
+#Documentation needed here
 def traverse_tree(root, Input_RowCol, input_size):
 
     #If leaf node has been reached return the graphs associated with it
@@ -115,9 +115,15 @@ def traverse_tree(root, Input_RowCol, input_size):
     
     return []
 
-#Finish before 7/14
-def draw_tree(root):
-    return 0
+#Documentation needed here
+def draw_tree(root, tree_visualization):
+    node_number = tree_visualization.number_of_nodes()
+    for children in root.child:
+        stringconvert = " ".join(map(str,children.row_col))
+        tree_visualization.add_edge(node_number,tree_visualization.number_of_nodes()+1,rowcol = stringconvert)
+        draw_tree(children,tree_visualization)
+
+    return
 
 #main 
 #Graph Creation
@@ -152,7 +158,7 @@ Permutated_Subgraphs = adj_mat(AdjMatrix_Model.todense(),Permutation_Matrix_List
 
 tree_root = TreeNode()
 tree_Graph = nx.DiGraph()
-tree_Graph.add_node("root")
+tree_Graph.add_node(1)
 
 #Input_RowCol = row_col(Graph,len(Graph))
 
@@ -178,8 +184,9 @@ for i in range(Model_nodes*2):
 #Traversal of Decision tree to Analyze an Input Graph Subgraph Isomorphism
 
 
-input_rowcol = [[2], [0, 3, 1]]
-#, [0, 1, 2, 0, 1]
+input_rowcol = [[2], [0, 3, 1], [0, 1, 2, 0, 1]]
+#input_rowcol = [[2], [0, 3, 1]]
+#input_rowcol = [[2]]
 
 print(f"Input Graph Row Column Representation\n{input_rowcol}")
 
@@ -196,9 +203,23 @@ else:
 
 
 
-
+draw_tree(tree_root,tree_Graph)
 #pos = nx.nx_pydot.graphviz_layout(tree_Graph, prog="dot")
-#nx.draw_networkx(tree_Graph, pos)
+#nx.draw_networkx_edge_labels(tree_Graph, pos = nx.spring_layout(tree_Graph))
+nx.draw_networkx(tree_Graph)
+
+#G = nx.complete_graph(4)
+
+# = nx.nx_pydot.graphviz_layout(G)
+
+#pos = nx.nx_pydot.graphviz_layout(G, prog="dot")
+#nx.draw(G)
+plt.show()
+
+#T = nx.balanced_tree(2, 5)
+
+#pos = graphviz_layout(T, prog="twopi")
+#nx.draw(T, pos)
 #plt.show()
 
 
