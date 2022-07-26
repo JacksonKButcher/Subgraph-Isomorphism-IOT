@@ -107,7 +107,7 @@ def traverse_tree(root, Input_RowCol, input_size):
 
     #If leaf node has been reached return the graphs associated with it
     if(root.tier == input_size):
-        return root.graphs
+        return root
 
     for children in root.child:
         if(children.row_col == Input_RowCol[root.tier]):
@@ -129,19 +129,9 @@ def draw_tree(root, tree_visualization):
 #Graph Creation
 #sample adj matrix from paper Subgraph Isomorphism in polynomial time
 G_Model = nx.DiGraph()
-
-#Random Graph of 10 nodes with 20 edges
-#Test run of current program with decision tree creation 7/7/2022
-#Total time taken was 1 minute 27 seconds
-#G_Model = nx.gnm_random_graph(10, 20, seed=109389)
-
 edgelist = [(0, 1),(0, 2),(1, 2)]
 G_Model.add_edges_from(edgelist)
 Model_nodes = nx.number_of_nodes(G_Model)
-
-#Graph Drawing utilizing pyplot
-#nx.draw_networkx(G_Model)
-#plt.show()
 
 #Adjacency Matrix of Model Graph Generation
 AdjMatrix_Model = nx.adjacency_matrix(G_Model)
@@ -155,12 +145,10 @@ Permutation_Matrix_List = per_mat(Model_nodes)
 
 Permutated_Subgraphs = adj_mat(AdjMatrix_Model.todense(),Permutation_Matrix_List)
 
+#Decision Tree declaration
 tree_root = TreeNode()
 tree_Graph = nx.DiGraph()
 tree_Graph.add_node(1)
-
-#Input_RowCol = row_col(Graph,len(Graph))
-
 
 #Printing Subgraphs and Row-Column Representation
 for i in range(Model_nodes*2):
@@ -190,10 +178,10 @@ input_rowcol = [[2], [0, 3, 1], [0, 1, 2, 0, 1]]
 print(f"Input Graph Row Column Representation\n{input_rowcol}")
 
 test = traverse_tree(tree_root,input_rowcol,len(input_rowcol))
-if not(test):
+if not(test.graphs):
     print("No Subgraph Match")
 else:
-    print(f"Input Graph Matches Graphs {test}")
+    print(f"Input Graph Matches Graphs {test.graphs}")
 
 
 
@@ -209,17 +197,4 @@ nx.draw_networkx(tree_Graph,pos)
 edge_labels = nx.get_edge_attributes(tree_Graph,'rc')
 nx.draw_networkx_edge_labels(tree_Graph, pos,edge_labels = edge_labels,font_size=8,horizontalalignment='center',rotate=False)
 plt.show()
-
-
-
-
-
-
-
-#Misc code leftovers
-#stringconvert = " ".join(map(str,Adj_Matrix[index]))
-#stringconvert2 = " ".join(map(str,Adj_Matrix[index-1]))
-#if(index == 0):
-#tree_Graph.add_edge(stringconvert2, "root")
-#else:
-#tree_Graph.add_edge(stringconvert2, stringconvert)
+#plt.savefig()
