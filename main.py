@@ -1,3 +1,4 @@
+from os import kill
 import networkx as nx
 import numpy as np
 import itertools as it
@@ -81,12 +82,12 @@ def row_col(M, nodes):
 # Output: 
 #   No official output. 
 #   Root node orginially passed should now have branches.
-def create_tree(Adj_Matrix, root, index, graph_number):
+def merge_tree(Adj_Matrix, root, index, graph_number):
     #Case: row-column is represented in one of the childs of root
     for children in root.child:
         if(Adj_Matrix[index] == children.row_col):
             root.graphs.append(graph_number)
-            create_tree(Adj_Matrix,children,index+1,graph_number)
+            merge_tree(Adj_Matrix,children,index+1,graph_number)
             return 0
     #Case: recursion has reached a branch node at the bottom of the tree
     if(index == len(Adj_Matrix)):
@@ -98,8 +99,48 @@ def create_tree(Adj_Matrix, root, index, graph_number):
         ChildNode.row_col = Adj_Matrix[index]
         ChildNode.tier = index + 1
         root.insert_child(ChildNode)
-        create_tree(Adj_Matrix,ChildNode,index+1,graph_number)
+        merge_tree(Adj_Matrix,ChildNode,index+1,graph_number)
     root.graphs.append(graph_number)
+    return 0
+
+#Generate a decision tree to identify subgraph isomorphism
+#Input: Adjacency Matrix of Graph
+#Output: Root node of the decision tree
+def create_tree(Adj_Matrix, model_vertices):
+    #
+    Permutation_Matrix_List = per_mat(model_vertices)
+    #
+    Permutated_Subgraphs = adj_mat(Adj_Matrix,Permutation_Matrix_List)
+    
+    #
+    row_columns = []
+    for i in range(len(Permutated_Subgraphs)):
+        x = row_col(Permutated_Subgraphs[i],model_vertices)
+        row_columns.append(x)
+
+
+    root = TreeNode()
+    #loop through each size of subgraph until 1 is hit
+    for k in range(model_vertices):
+        merge_tree2(Permutated_Subgraphs, root, k)
+    return root
+
+#Fill out a layer of the decision tree of the subgraphs up to k vertices
+def merge_tree2(row_columns, root, k):
+
+    for graph in row_columns:
+        node = TreeNode()
+        for n in range(k):
+            #Case 1:
+            #
+            if(node.check_children(graph[n])):
+                break
+            #Case 2:
+            #
+            else:
+                ChildNode = TreeNode()
+                ChildNode.row_col = graph[n]
+                root.insert_child(ChildNode)
     return 0
 
 #Documentation needed here
@@ -107,7 +148,7 @@ def traverse_tree(root, Input_RowCol, input_size):
 
     #If leaf node has been reached return the graphs associated with it
     if(root.tier == input_size):
-        return root
+        return root.graphs
 
     for children in root.child:
         if(children.row_col == Input_RowCol[root.tier]):
@@ -129,9 +170,19 @@ def draw_tree(root, tree_visualization):
 #Graph Creation
 #sample adj matrix from paper Subgraph Isomorphism in polynomial time
 G_Model = nx.DiGraph()
+
+#Random Graph of 10 nodes with 20 edges
+#Test run of current program with decision tree creation 7/7/2022
+#Total time taken was 1 minute 27 seconds
+#G_Model = nx.gnm_random_graph(10, 20, seed=109389)
+
 edgelist = [(0, 1),(0, 2),(1, 2)]
 G_Model.add_edges_from(edgelist)
 Model_nodes = nx.number_of_nodes(G_Model)
+
+#Graph Drawing utilizing pyplot
+#nx.draw_networkx(G_Model)
+#plt.show()
 
 #Adjacency Matrix of Model Graph Generation
 AdjMatrix_Model = nx.adjacency_matrix(G_Model)
@@ -145,10 +196,12 @@ Permutation_Matrix_List = per_mat(Model_nodes)
 
 Permutated_Subgraphs = adj_mat(AdjMatrix_Model.todense(),Permutation_Matrix_List)
 
-#Decision Tree declaration
 tree_root = TreeNode()
 tree_Graph = nx.DiGraph()
 tree_Graph.add_node(1)
+
+#Input_RowCol = row_col(Graph,len(Graph))
+
 
 #Printing Subgraphs and Row-Column Representation
 for i in range(Model_nodes*2):
@@ -162,10 +215,11 @@ for i in range(Model_nodes*2):
     #plt.show()
 
     #Creating Decision Tree with create_tree
-    create_tree(x,tree_root,0,i)
+    merge_tree(x,tree_root,0,i)
 
 #tree_root.print()
 
+#decision_tree = create_tree(AdjMatrix.todense(),Model_nodes)
 
 
 #Traversal of Decision tree to Analyze an Input Graph Subgraph Isomorphism
@@ -178,10 +232,10 @@ input_rowcol = [[2], [0, 3, 1], [0, 1, 2, 0, 1]]
 print(f"Input Graph Row Column Representation\n{input_rowcol}")
 
 test = traverse_tree(tree_root,input_rowcol,len(input_rowcol))
-if not(test.graphs):
+if not(test):
     print("No Subgraph Match")
 else:
-    print(f"Input Graph Matches Graphs {test.graphs}")
+    print(f"Input Graph Matches Graphs {test}")
 
 
 
@@ -197,4 +251,17 @@ nx.draw_networkx(tree_Graph,pos)
 edge_labels = nx.get_edge_attributes(tree_Graph,'rc')
 nx.draw_networkx_edge_labels(tree_Graph, pos,edge_labels = edge_labels,font_size=8,horizontalalignment='center',rotate=False)
 plt.show()
-#plt.savefig()
+
+
+
+
+
+
+
+#Misc code leftovers
+#stringconvert = " ".join(map(str,Adj_Matrix[index]))
+#stringconvert2 = " ".join(map(str,Adj_Matrix[index-1]))
+#if(index == 0):
+#tree_Graph.add_edge(stringconvert2, "root")
+#else:
+#tree_Graph.add_edge(stringconvert2, stringconvert)
