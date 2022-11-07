@@ -1,4 +1,3 @@
-from os import kill
 import networkx as nx
 import numpy as np
 import itertools as it
@@ -199,11 +198,10 @@ G_Model = nx.DiGraph()
 #Total time taken was 1 minute 27 seconds
 #G_Model = nx.gnm_random_graph(10, 20, seed=109389)
 
-edgelist_3node = [(0, 1),(0, 2),(1, 2)]
+edgelist_4node = [(0, 1),(0, 2),(1, 2),(2,3)]
 edgelist_test = [(0,1)]
-edgelist_4node = [(0,1),(0,2),(1,2),(2,3),(0,3)]
 edgelist_5node = [(0,1),(0,2),(1,3),(2,3),(2,4),(3,4)]
-G_Model.add_edges_from(edgelist_3node)
+G_Model.add_edges_from(edgelist_test)
 Model_nodes = nx.number_of_nodes(G_Model)
 
 #Graph Drawing utilizing pyplot
@@ -219,8 +217,6 @@ Permutation_Matrix_List = per_mat(Model_nodes)
 
 Permutated_Subgraphs = adj_mat(AdjMatrix_Model.todense(),Permutation_Matrix_List)
 
-
-#Decision Tree Instantation
 tree_root = TreeNode()
 tree_Graph = nx.DiGraph()
 tree_Graph.add_node(1)
@@ -248,10 +244,15 @@ for i in range(Model_nodes*2):
 
 #Input graph creation and handling
 G_Input = nx.DiGraph()
-edgelist_input = [(0, 1),(0, 2),(2,1)]
+edgelist_input = [(2,1),(2,3)]
 edgelist_input2 = [(0,1),(0,2)]
 G_Input.add_edges_from(edgelist_input2)
+AdjMatrix_Input = nx.adjacency_matrix(G_Input)
+input_nodes = nx.number_of_nodes(G_Input)
 
+#Draw Input Graph
+nx.draw_networkx(G_Input)
+plt.show()
 
 #Draw Input Graph
 nx.draw_networkx(G_Input,arrowsize=30,font_color = "w",node_color = "k")
